@@ -1,4 +1,7 @@
+# Raspberry Pi3, Kubernetes 1.9.6, Calico 3.2.1
+
 ## On mac
+Install pv and awscli for hypriot flash util. Install wget to grab hypriot arm64 build. Flash sdcard for master1
 ```
 brew install pv
 brew install awscli
@@ -10,6 +13,7 @@ flash --hostname master1 hypriotos-rpi64-v20171013-172949.img.zip
 ```
 
 ## Setup master OS
+Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@master1.local
 sudo su -
@@ -29,9 +33,12 @@ reboot
 ```
 
 ## Setup etcd
+Flash OS for etcd
 ```
 flash --hostname etcd1 ~/Downloads/hypriotos-rpi64-v20171013-172949.img.zip
-
+```
+Set up static IP, turn swap off, install utils to ping .local
+```
 ssh pirate@etcd1.local
 sudo su -
 
@@ -49,6 +56,7 @@ apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
 ```
+Set up user for etcd
 ```
 ssh pirate@etcd1.local
 sudo su -
@@ -57,12 +65,14 @@ mkdir -p /var/lib/etcd
 groupadd -f -g 1501 etcd
 useradd -c "Etcd key-value store user" -d /var/lib/etcd -s /bin/false -g etcd -u 1501 etcd
 chown -R etcd:etcd /var/lib/etcd
-
-
+```
+Download and put etcd binaries in /usr/local/bin
+```
 curl -ksL 'https://github.com/coreos/etcd/releases/download/v3.2.24/etcd-v3.2.24-linux-arm64.tar.gz' | tar -xzvf -
 cp etcd-v3.2.24-linux-arm64/etcd* /usr/local/bin
-
+```
 vi /etc/systemd/system/etcd.service
+```
 [Unit]
 Description=etcd key-value store
 Documentation=https://github.com/coreos/etcd
@@ -77,21 +87,28 @@ RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target
-
+```
+Enable and start etcd systemd service
+```
 systemctl daemon-reload
 systemctl enable etcd
 systemctl start etcd.service
 systemctl status -l etcd.service
 ```
 ## Install kubeadm on master1
+Install kubeadm packages and generate a token.
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernetes-cni=0.6.0-00 kubectl=1.9.6-00
-$ kubeadm token generate
+kubeadm token generate
+```
+Save the token output and will add to the config.yaml file.
+```
 5d69bd.0cf57423e604617f
-
+```
 vi config.yaml
+```
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
 api:
@@ -109,9 +126,16 @@ token: "5d69bd.0cf57423e604617f"
 tokenTTL: "0"
 kubernetesVersion: 1.9.6
 ```
+Initialize the cluster
 ```
 kubeadm init --config=config.yaml
-#kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+```
+Save the output from the initialization to join worker nodes
+```
+kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+```
+Setup user account to manage kubernetes
+```
 exit
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -119,6 +143,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ## Setup node1
+Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node1.local
 sudo su -
@@ -136,6 +161,7 @@ apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
 ```
+Install kubeadm packages and join cluster
 ```
 ssh pirate@node3.local
 sudo su -
@@ -147,6 +173,7 @@ kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token
 ```
 
 ## Setup node2
+Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node2.local
 sudo su -
@@ -164,6 +191,7 @@ apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
 ```
+Install kubeadm packages and join cluster
 ```
 ssh pirate@node3.local
 sudo su -
@@ -175,6 +203,7 @@ kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token
 ```
 
 ## Setup node3
+Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node3.local
 sudo su -
@@ -192,6 +221,7 @@ apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
 ```
+Install kubeadm packages and join cluster
 ```
 ssh pirate@node3.local
 sudo su -
@@ -207,6 +237,8 @@ kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
 ```
+### Modify calico.yaml
+In the calico.yaml we need to update `etcd_endpoints:` for our etcd IP, `image:` for (node,cni,kube-controllers) to pull arm64 versions, and disable IPIP (CALICO_IPV4POOL_IPIP).
 ```
 vi calico.yaml
 
@@ -601,6 +633,7 @@ metadata:
   name: calico-kube-controllers
   namespace: kube-system
 ```
+### Apply calico.yaml
 ```
 kubectl apply -f calico.yaml
 ```
@@ -633,3 +666,7 @@ node1     Ready     <none>    27m       v1.9.6
 node2     Ready     <none>    27m       v1.9.6
 node3     Ready     <none>    27m       v1.9.6
 ```
+
+https://github.com/kubernetes/kubernetes/issues/61277
+https://www.kevinhooke.com/2016/07/12/configuring-a-static-ip-on-hypriotos-for-the-raspberry-pi/
+https://icicimov.github.io/blog/kubernetes/Kubernetes-cluster-step-by-step-Part3/
