@@ -202,8 +202,8 @@ apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernete
 kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
 ```
 
-##Install Calico
-###Setup RBAC
+## Install Calico
+### Setup RBAC
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
 ```
@@ -600,6 +600,9 @@ kind: ServiceAccount
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
+```
+```
+kubectl apply -f calico.yaml
 ```
 
 ## Verify the install
