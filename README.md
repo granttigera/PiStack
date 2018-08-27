@@ -1,4 +1,5 @@
-##On mac
+## On mac
+```
 brew install pv
 brew install awscli
 brew install wget
@@ -6,8 +7,10 @@ wget https://github.com/DieterReuter/image-builder-rpi64/releases/download/v2017
 curl -LO https://github.com/hypriot/flash/releases/download/2.1.1/flash\nchmod +x flash
 sudo mv flash /usr/local/bin/flash
 flash --hostname master1 hypriotos-rpi64-v20171013-172949.img.zip
+```
 
-##Setup master OS
+## Setup master OS
+```
 ssh pirate@master1.local
 sudo su -
 vi /etc/network/interfaces.d/eth0
@@ -18,12 +21,15 @@ address 172.16.0.130
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
+
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
+```
 
-##Setup etcd
+## Setup etcd
+```
 flash --hostname etcd1 ~/Downloads/hypriotos-rpi64-v20171013-172949.img.zip
 
 ssh pirate@etcd1.local
@@ -37,11 +43,13 @@ address 172.16.0.131
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
+
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
-
+```
+```
 ssh pirate@etcd1.local
 sudo su -
 
@@ -74,8 +82,9 @@ systemctl daemon-reload
 systemctl enable etcd
 systemctl start etcd.service
 systemctl status -l etcd.service
-
-#Install kubeadm on master1
+```
+## Install kubeadm on master1
+```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernetes-cni=0.6.0-00 kubectl=1.9.6-00
@@ -99,17 +108,18 @@ networking:
 token: "5d69bd.0cf57423e604617f"
 tokenTTL: "0"
 kubernetesVersion: 1.9.6
-
-##images command not in 1.9.6 kubeadm
-##kubeadm config images pull
+```
+```
 kubeadm init --config=config.yaml
 #kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
 exit
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
-##Setup node1
+## Setup node1
+```
 ssh pirate@node1.local
 sudo su -
 
@@ -125,7 +135,8 @@ swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
-
+```
+```
 ssh pirate@node3.local
 sudo su -
 
@@ -133,8 +144,10 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernetes-cni=0.6.0-00 kubectl=1.9.6-00
 kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+```
 
-##Setup node2
+## Setup node2
+```
 ssh pirate@node2.local
 sudo su -
 
@@ -150,7 +163,8 @@ swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
-
+```
+```
 ssh pirate@node3.local
 sudo su -
 
@@ -158,8 +172,10 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernetes-cni=0.6.0-00 kubectl=1.9.6-00
 kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+```
 
-##Setup node3
+## Setup node3
+```
 ssh pirate@node3.local
 sudo su -
 
@@ -175,7 +191,8 @@ swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
 reboot
-
+```
+```
 ssh pirate@node3.local
 sudo su -
 
@@ -183,11 +200,14 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubelet=1.9.6-00 kubeadm=1.9.6-00 kubernetes-cni=0.6.0-00 kubectl=1.9.6-00
 kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+```
 
 ##Install Calico
 ###Setup RBAC
+```
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
-
+```
+```
 vi calico.yaml
 
 # Calico Version v3.2.1
@@ -580,7 +600,10 @@ kind: ServiceAccount
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
+```
 
+## Verify the install
+```
 watch -n1 kubectl get pods -o wide -n kube-system
 
 Every 1.0s: kubectl get pods -o wide -n kube-system                                                                                                                                                           master1: Mon Aug 27 01:52:07 2018
@@ -606,3 +629,4 @@ master1   Ready     master    51m       v1.9.6
 node1     Ready     <none>    27m       v1.9.6
 node2     Ready     <none>    27m       v1.9.6
 node3     Ready     <none>    27m       v1.9.6
+```
