@@ -139,7 +139,7 @@ kubeadm init --config=config.yaml
 ```
 Save the output from the initialization to join worker nodes
 ```
-kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
+#kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token-ca-cert-hash sha256:5df77e08ae592eebeb0afc8b6c0f5ad485ded073297fc1956b7b4ba867383e63
 ```
 Setup user account to manage kubernetes
 ```
