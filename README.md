@@ -1,5 +1,7 @@
 # Raspberry Pi3, Kubernetes 1.9.6, Calico 3.2.1
 
+This guide is to help you get 
+
 ## On mac
 Install pv and awscli for hypriot flash util. Install wget to grab hypriot arm64 build. Flash sdcard for master1
 ```
@@ -17,7 +19,9 @@ Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@master1.local
 sudo su -
+```
 vi /etc/network/interfaces.d/eth0
+```
 allow-hotplug eth0
 #iface eth0 inet dhcp
 iface eth0 inet static
@@ -25,7 +29,8 @@ address 172.16.0.130
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
-
+```
+```
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
@@ -41,8 +46,9 @@ Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@etcd1.local
 sudo su -
-
+```
 vi /etc/network/interfaces.d/eth0
+```
 allow-hotplug eth0
 #iface eth0 inet dhcp
 iface eth0 inet static
@@ -50,7 +56,8 @@ address 172.16.0.131
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
-
+```
+```
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
@@ -147,8 +154,9 @@ Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node1.local
 sudo su -
-
+```
 vi /etc/network/interfaces.d/eth0
+```
 allow-hotplug eth0
 #iface eth0 inet dhcp
 iface eth0 inet static
@@ -156,6 +164,8 @@ address 172.16.0.132
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
+```
+```
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
@@ -177,8 +187,9 @@ Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node2.local
 sudo su -
-
+```
 vi /etc/network/interfaces.d/eth0
+```
 allow-hotplug eth0
 #iface eth0 inet dhcp
 iface eth0 inet static
@@ -186,6 +197,8 @@ address 172.16.0.133
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
+```
+```
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
@@ -207,8 +220,9 @@ Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node3.local
 sudo su -
-
+```
 vi /etc/network/interfaces.d/eth0
+```
 allow-hotplug eth0
 #iface eth0 inet dhcp
 iface eth0 inet static
@@ -216,6 +230,8 @@ address 172.16.0.134
 gateway 172.16.0.1
 #google dns servers
 domain_name_servers=8.8.8.8, 8.8.4.4
+```
+```
 swapoff -a
 apt-get update
 apt-get -y install libnss-mdns avahi-utils
@@ -239,9 +255,9 @@ kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/
 ```
 ### Modify calico.yaml
 In the calico.yaml we need to update `etcd_endpoints:` for our etcd IP, `image:` for (node,cni,kube-controllers) to pull arm64 versions, and disable IPIP (CALICO_IPV4POOL_IPIP).
-```
-vi calico.yaml
 
+vi calico.yaml
+```
 # Calico Version v3.2.1
 # https://docs.projectcalico.org/v3.2/releases#v3.2.1
 # This manifest includes the following component versions:
@@ -666,7 +682,9 @@ node1     Ready     <none>    27m       v1.9.6
 node2     Ready     <none>    27m       v1.9.6
 node3     Ready     <none>    27m       v1.9.6
 ```
-
+Reference URLs
+```
 https://github.com/kubernetes/kubernetes/issues/61277
 https://www.kevinhooke.com/2016/07/12/configuring-a-static-ip-on-hypriotos-for-the-raspberry-pi/
 https://icicimov.github.io/blog/kubernetes/Kubernetes-cluster-step-by-step-Part3/
+```
