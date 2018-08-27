@@ -40,7 +40,7 @@ reboot
 ## Setup etcd
 Flash OS for etcd
 ```
-flash --hostname etcd1 ~/Downloads/hypriotos-rpi64-v20171013-172949.img.zip
+flash --hostname etcd1 hypriotos-rpi64-v20171013-172949.img.zip
 ```
 Set up static IP, turn swap off, install utils to ping .local
 ```
@@ -150,6 +150,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ## Setup node1
+Flash OS for node1
+```
+flash --hostname node1 hypriotos-rpi64-v20171013-172949.img.zip
+```
 Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node1.local
@@ -183,6 +187,10 @@ kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token
 ```
 
 ## Setup node2
+Flash OS for node2
+```
+flash --hostname node2 hypriotos-rpi64-v20171013-172949.img.zip
+```
 Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node2.local
@@ -216,6 +224,10 @@ kubeadm join --token 5d69bd.0cf57423e604617f 172.16.0.130:6443 --discovery-token
 ```
 
 ## Setup node3
+Flash OS for node3
+```
+flash --hostname node3 hypriotos-rpi64-v20171013-172949.img.zip
+```
 Set up static IP, turn swap off, install utils to ping .local
 ```
 ssh pirate@node3.local
