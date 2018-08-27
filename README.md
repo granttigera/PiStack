@@ -1,6 +1,6 @@
 # Raspberry Pi3, Kubernetes 1.9.6, Calico 3.2.1
 
-This guide is to help you deploy Kubernetes and Calico on Raspberry Pi3's. This guide is based on 5 pi's (1 master, 1 etcd, 3 worker nodes). I had challenges with the kube-apiserver crashing during the `kubeadm init` bring up so I have dedicated one pi to run etcd.
+This guide is to help you deploy Kubernetes and Calico on Raspberry Pi3's. This guide is based on 5 pi's (1 master, 1 etcd, 3 worker nodes). I had challenges with the kube-apiserver crashing during the `kubeadm init` bring up so I have dedicated one pi to run etcd for both Kubernetes and Calico.
 
 ## On mac
 Install pv and awscli for hypriot flash util. Install wget to grab hypriot arm64 build. Flash sdcard for master1
