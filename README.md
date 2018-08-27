@@ -177,7 +177,7 @@ reboot
 ```
 Install kubeadm packages and join cluster
 ```
-ssh pirate@node3.local
+ssh pirate@node1.local
 sudo su -
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -214,7 +214,7 @@ reboot
 ```
 Install kubeadm packages and join cluster
 ```
-ssh pirate@node3.local
+ssh pirate@node2.local
 sudo su -
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
