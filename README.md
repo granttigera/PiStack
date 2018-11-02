@@ -888,6 +888,83 @@ node1     Ready    <none>   26m   v1.12.2
 node2     Ready    <none>   16m   v1.12.2
 node3     Ready    <none>   11m   v1.12.2
 ```
+## Validate Calico Policy
+Create a demo.yaml on master which will deploy a pod to a couple linux nodes
+```
+cat > demo.yaml <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: lsioarmhf/nginx-aarch64
+        securityContext:
+            privileged: true
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+EOF
+```
+Watch while the pods get created
+```
+kubectl apply -f demo.yaml
+watch -n1 kubectl get pods -o wide
+```
+Curl from master to one of the nginx pods. You should get a default nginx page output.
+```
+curl http://<IP of a nginx pod>
+```
+Create a Global Network Policy to deny traffic to nginx called deny-nginx.yaml
+```
+cat > deny-nginx.yaml <<EOF
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: nginx-deny
+spec:
+  selector: app == 'nginx'
+  ingress:
+  - action: Deny
+    protocol: TCP
+    destination:
+      ports: [80]
+EOF
+```
+Install calicoctl
+```
+curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.3.0/calicoctl-linux-arm64
+chmod +x calicoctl-linux-arm64;sudo mv calicoctl-linux-arm64 /usr/local/bin/calicoctl
+```
+Create a calicoctl config file
+```
+cat > calicoctl.cfg <<EOF   
+apiVersion: projectcalico.org/v3
+kind: CalicoAPIConfig
+metadata:
+spec:
+  datastoreType: "etcdv3"
+  etcdEndpoints: http://172.16.0.131:2379
+EOF
+```
+Apply the new policy 
+```
+calicoctl apply -f deny-nginx.yaml -c calicoctl.cfg   
+```
+Curl from master to one of the nginx pods. You will no longer be able to access the pods.
+```
+curl http://<IP of a nginx pod>
+```
+
 Reference URLs
 ```
 https://github.com/kubernetes/kubernetes/issues/61277
