@@ -15,7 +15,7 @@ flash --hostname master1 hypriotos-rpi64-v20180429-184538.img.zip
 ```
 
 ## Setup master OS
-Set up static IP, turn swap off, install utils to ping .local
+Set up static IP, turn swap off, edit boot config to add cgroup_enable=memory, install utils to ping .local
 ```
 ssh pirate@master1.local
 sudo su -
@@ -48,7 +48,7 @@ Flash OS for etcd
 ```
 flash --hostname etcd1 hypriotos-rpi64-v20180429-184538.img.zip
 ```
-Set up static IP, turn swap off, install utils to ping .local
+Set up static IP, turn swap off, edit boot config to add cgroup_enable=memory, install utils to ping .local
 ```
 ssh pirate@etcd1.local
 sudo su -
@@ -279,7 +279,7 @@ Prepull control plane images
 ```
 kubeadm config images pull
 ```
-Open a second terminal session to master1. We need to run a job to increase the kube-apiserver delay so it can can complete.
+Open a second terminal session to master1. We need to run a job to increase the kube-apiserver delay so it can can complete during the kubeadm init.
 ```
 ssh pirate@master1.local
 sudo su -
@@ -317,7 +317,7 @@ Flash OS for node1
 ```
 flash --hostname node1 hypriotos-rpi64-v20180429-184538.img.zip
 ```
-Set up static IP, turn swap off, install utils to ping .local
+Set up static IP, turn swap off, edit boot config to add cgroup_enable=memory, install utils to ping .local
 ```
 ssh pirate@node1.local
 sudo su -
@@ -357,7 +357,7 @@ Flash OS for node2
 ```
 flash --hostname node2 hypriotos-rpi64-v20180429-184538.img.zip
 ```
-Set up static IP, turn swap off, install utils to ping .local
+Set up static IP, turn swap off, edit boot config to add cgroup_enable=memory, install utils to ping .local
 ```
 ssh pirate@node2.local
 sudo su -
@@ -397,7 +397,7 @@ Flash OS for node3
 ```
 flash --hostname node3 hypriotos-rpi64-v20180429-184538.img.zip
 ```
-Set up static IP, turn swap off, install utils to ping .local
+Set up static IP, turn swap off, edit boot config to add cgroup_enable=memory, install utils to ping .local
 ```
 ssh pirate@node3.local
 sudo su -
