@@ -964,6 +964,11 @@ Curl from master to one of the nginx pods. You will no longer be able to access 
 ```
 curl http://<IP of a nginx pod>
 ```
+Cleanup
+```
+calicoctl delete -f deny-nginx.yaml -c calicoctl.cfg 
+kubectl delete -f demo.yaml
+```
 
 Reference URLs
 ```
