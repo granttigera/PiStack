@@ -123,7 +123,7 @@ Save the token output and will add to the config.yaml file.
 ```
 vl7c34.anxkiafldl3g4hb4
 ```
-vi config-alpha2.yaml
+vi config-alpha2.yaml Update `advertiseAddress`, `apiServerCertSANs`, `token`, etcd: `endpoints`
 ```
 api:
   advertiseAddress: 172.16.0.130
